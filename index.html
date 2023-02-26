@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="status-select">
+        <label class="status-select-title">ステータス</label>
+        <select v-model="current">
+          <option v-for="status in options" v-bind:value="status.value">
+            {{ status.status }}
+          </option>
+        </select>
+      </div>
+      <div class="new-todo">
+        <h2>ToDoリスト</h2>
+        <form class="add-form" v-on:submit.prevent="doAdd">
+          <input type="text" ref="todo" />
+          <button type="submit">追加</button>
+        </form>
+      </div>
+      <div class="todo-list">
+        <table>
+          <thead>
+            <tr>
+              <th class="id">ID</th>
+              <th class="todo">Todo</th>
+              <th class="status">ステータス</th>
+              <th class="edit-upd-btn">編集/更新</th>
+              <th class="del-btn">削除</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in computedTodos" v-bind:key="item.id">
+              <th>{{ item.id }}</th>
+              <td>
+                <div v-if="!item.editStatus">{{ item.todo }}</div>
+                <input
+                  type="text"
+                  v-else
+                  v-bind:value="item.tempTodo"
+                  :ref="'updTodo' + item.id"
+                  @change="saveTempTodo(item)"
+                />
+              </td>
+              <td class="status">
+                <button v-on:click="doChangeStatus(item)">
+                  {{ labels[item.status] }}
+                </button>
+              </td>
+              <td class="button">
+                <button v-if="!item.editStatus" v-on:click="doEditMode(item)">
+                  編集
+                </button>
+                <button v-else v-on:click="doUpdate(item)">更新</button>
+              </td>
+              <td class="button">
+                <button v-on:click="doRemove(item)">削除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
