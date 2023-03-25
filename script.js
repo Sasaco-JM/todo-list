@@ -1,99 +1,95 @@
-const STORAGE_KEY = "todos-vuejs-demo";
+const STORAGE_KEY = "todo-list-vuejs";
 const todoStorage = {
-  fetch: function () {
-    const todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    todos.forEach(function (todo, index) {
+  fetch() {
+    const todoList = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    todoList.forEach(function (todo, index) {
       todo.id = index;
     });
-    todoStorage.uid = todos.length;
-    return todos;
+    todoStorage.uid = todoList.length;
+    return todoList;
   },
-  save: function (todos) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  save(todoList) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todoList));
   },
 };
 
-const app = new Vue({
-  el: "#app",
-  data: {
-    todos: [],
-    options: [
-      { value: -1, status: "すべて" },
-      { value: 0, status: "作業中" },
-      { value: 1, status: "完了" },
-    ],
-    current: -1,
+const TODO_STATUS = { all: -1, wip: 0, done: 1 };
+
+const app = Vue.createApp({
+  data() {
+    return {
+      todoList: [],
+      todoStatusView: [
+        { value: TODO_STATUS.all, status: "すべて" },
+        { value: TODO_STATUS.wip, status: "作業中" },
+        { value: TODO_STATUS.done, status: "完了" },
+      ],
+      newTodo: "",
+      selectedTodoStatus: -1,
+      editIndex: null,
+    };
   },
   computed: {
-    computedTodos: function () {
-      return this.todos.filter(function (el) {
-        return this.current < 0 ? true : this.current === el.status;
+    filteredTodoList() {
+      return this.todoList.filter(function (el) {
+        return this.selectedTodoStatus === TODO_STATUS.all
+          ? true
+          : this.selectedTodoStatus === el.status;
       }, this);
     },
-    labels() {
-      return this.options.reduce(function (a, b) {
+    todoStatuslabels() {
+      return this.todoStatusView.reduce(function (a, b) {
         return Object.assign(a, { [b.value]: b.status });
       }, {});
     },
   },
   methods: {
-    doAdd: function (event, value) {
-      const todo = this.$refs.todo;
-      console.log(todo);
-      if (!todo.value.length) {
+    addTodo() {
+      const newTodo = this.newTodo;
+      if (!newTodo.length) {
         return;
       }
-      this.todos.push({
+      this.todoList.push({
         id: todoStorage.uid++,
-        todo: todo.value,
-        tempTodo: todo.value,
-        status: 0,
-        editStatus: false,
+        todo: newTodo,
+        status: TODO_STATUS.wip,
       });
-
-      todo.value = "";
+      this.newTodo = "";
+      todoStorage.save(this.todoList);
     },
-    doChangeStatus: function (item) {
-      item.status = item.status ? 0 : 1;
+    changeTodoStatus(item) {
+      item.status = item.status ? TODO_STATUS.wip : TODO_STATUS.done;
+      todoStorage.save(this.todoList);
     },
-    doRemove: function (item) {
-      const index = this.todos.indexOf(item);
-      this.todos.splice(index, 1);
+    removeTodo(item) {
+      const index = this.todoList.indexOf(item);
+      this.todoList.splice(index, 1);
+      todoStorage.save(this.todoList);
     },
-    doEditMode: function (item) {
-      const index = this.todos.indexOf(item);
-      this.todos[index].editStatus = true;
-      console.log(this.todos[index].editStatus);
+    editTodo(index) {
+      this.editIndex = index;
     },
-    doUpdate: function (item) {
-      const index = this.todos.indexOf(item);
-      console.log(this.$refs);
-
-      const updTodo = this.$refs["updTodo" + item.id][0];
-
-      if (!updTodo.value.length) {
-        this.todos[index].editStatus = false;
+    updateTodo(item) {
+      const updTodo = item.todo;
+      this.editIndex = null;
+      if (!updTodo.length) {
         return;
       }
-      this.todos[index].todo = updTodo.value;
-      this.todos[index].tempTodo = updTodo.value;
-      this.todos[index].editStatus = false;
+      this.updateLocalStorage();
     },
-    saveTempTodo: function (item) {
-      const index = this.todos.indexOf(item);
-      console.log(this.$refs);
-
-      const updTempTodo = this.$refs["updTodo" + item.id][0];
-
-      if (!updTempTodo.value.length) {
-        this.todos[index].editStatus = false;
-        return;
-      }
-      this.todos[index].tempTodo = updTempTodo.value;
+    updateLocalStorage() {
+      todoStorage.save(this.todoList);
     },
   },
   created() {
-    this.todos = todoStorage.fetch();
+    this.todoList = todoStorage.fetch();
+  },
+  directives: {
+    focus: {
+      mounted(el) {
+        el.focus();
+      },
+    },
   },
 });
 

@@ -9,16 +9,16 @@
     <div id="app">
       <div class="status-select">
         <label class="status-select-title">ステータス</label>
-        <select v-model="current">
-          <option v-for="status in options" v-bind:value="status.value">
+        <select v-model="selectedTodoStatus">
+          <option v-for="status in todoStatusView" v-bind:value="status.value">
             {{ status.status }}
           </option>
         </select>
       </div>
       <div class="new-todo">
         <h2>ToDoリスト</h2>
-        <form class="add-form" v-on:submit.prevent="doAdd">
-          <input type="text" ref="todo" />
+        <form class="add-form" v-on:submit.prevent="addTodo">
+          <input type="text" v-model="newTodo" />
           <button type="submit">追加</button>
         </form>
       </div>
@@ -29,43 +29,41 @@
               <th class="id">ID</th>
               <th class="todo">Todo</th>
               <th class="status">ステータス</th>
-              <th class="edit-upd-btn">編集/更新</th>
+              <th class="edit-upd-btn">編集</th>
               <th class="del-btn">削除</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in computedTodos" v-bind:key="item.id">
+            <tr v-for="(item,index) in filteredTodoList" v-bind:key="item.id">
               <th>{{ item.id }}</th>
               <td>
-                <div v-if="!item.editStatus">{{ item.todo }}</div>
+                <div v-if="editIndex!==index">{{ item.todo }}</div>
                 <input
+                  v-focus
                   type="text"
                   v-else
-                  v-bind:value="item.tempTodo"
-                  :ref="'updTodo' + item.id"
-                  @change="saveTempTodo(item)"
+                  v-model="item.todo"
+                  v-on:keyup.enter="updateTodo(item)"
+                  v-on:blur="updateTodo(item)"
                 />
               </td>
               <td class="status">
-                <button v-on:click="doChangeStatus(item)">
-                  {{ labels[item.status] }}
+                <button v-on:click="changeTodoStatus(item)">
+                  {{ todoStatuslabels[item.status] }}
                 </button>
               </td>
               <td class="button">
-                <button v-if="!item.editStatus" v-on:click="doEditMode(item)">
-                  編集
-                </button>
-                <button v-else v-on:click="doUpdate(item)">更新</button>
+                <button v-on:click="editTodo(index)">編集</button>
               </td>
               <td class="button">
-                <button v-on:click="doRemove(item)">削除</button>
+                <button v-on:click="removeTodo(item)">削除</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
