@@ -10,7 +10,7 @@
       <div class="status-select">
         <label class="status-select-title">ステータス</label>
         <select v-model="selectedTodoStatus">
-          <option v-for="status in todoStatusView" v-bind:value="status.value">
+          <option v-for="status in todoStatuses" v-bind:value="status.value">
             {{ status.status }}
           </option>
         </select>
@@ -34,29 +34,29 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filteredTodoList" v-bind:key="item.id">
-              <th>{{ item.id }}</th>
+            <tr v-for="(todo, index) in filteredTodoList" v-bind:key="todo.id">
+              <th>{{ todo.id }}</th>
               <td>
-                <div v-if="editIndex!==index">{{ item.todo }}</div>
+                <div v-if="editIndex !== index">{{ todo.todo }}</div>
                 <input
                   v-focus
                   type="text"
                   v-else
-                  v-model="item.todo"
-                  v-on:keyup.enter="updateTodo(item)"
-                  v-on:blur="updateTodo(item)"
+                  v-model="todo.todo"
+                  v-on:keyup.enter="updateTodo(todo)"
+                  v-on:blur="updateTodo(todo)"
                 />
               </td>
               <td class="status">
-                <button v-on:click="changeTodoStatus(item)">
-                  {{ todoStatuslabels[item.status] }}
+                <button v-on:click="changeTodoStatus(todo)">
+                  {{ todoStatuslabels[todo.status] }}
                 </button>
               </td>
               <td class="button">
                 <button v-on:click="editTodo(index)">編集</button>
               </td>
               <td class="button">
-                <button v-on:click="removeTodo(item)">削除</button>
+                <button v-on:click="removeTodo(todo)">削除</button>
               </td>
             </tr>
           </tbody>

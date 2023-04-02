@@ -19,7 +19,7 @@ const app = Vue.createApp({
   data() {
     return {
       todoList: [],
-      todoStatusView: [
+      todoStatuses: [
         { value: TODO_STATUS.all, status: "すべて" },
         { value: TODO_STATUS.wip, status: "作業中" },
         { value: TODO_STATUS.done, status: "完了" },
@@ -31,14 +31,14 @@ const app = Vue.createApp({
   },
   computed: {
     filteredTodoList() {
-      return this.todoList.filter(function (el) {
+      return this.todoList.filter((el) => {
         return this.selectedTodoStatus === TODO_STATUS.all
           ? true
           : this.selectedTodoStatus === el.status;
-      }, this);
+      });
     },
     todoStatuslabels() {
-      return this.todoStatusView.reduce(function (a, b) {
+      return this.todoStatuses.reduce(function (a, b) {
         return Object.assign(a, { [b.value]: b.status });
       }, {});
     },
