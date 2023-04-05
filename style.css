@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
+body {
+  font-family: sans-serif;
+  height: 100%;
+}
+#app {
+  border-radius: 10px;
+  min-height: 50%;
+  min-width: 300px;
+  max-width: 60%;
+  margin: 0 auto;
+  border-right: 1px solid #d6d1d1;
+  border-left: 1px solid #d6d1d1;
+  background-color: #eaedee;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  justify-content: center;
+}
+td {
+  text-align: center;
+}
+button {
+  white-space: nowrap;
+}
+th.staus {
+  min-width: 30px;
+}
+.new-todo {
+  text-align: center;
+}
+.status-select {
+  padding: 1%;
+}
+.status-select-title {
+  font-weight: bold;
+}
+.new-todo {
+  padding-bottom: 50px;
+  background-color: #bcbbb8;
+}
+.todo-list {
+  height: 90%;
+}
